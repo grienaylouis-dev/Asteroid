@@ -1,6 +1,7 @@
 import pygame
 from circleshape import CircleShape #extension of the base Sprite class
 from constants import PLAYER_RADIUS, LINE_WIDTH, PLAYER_TURN_SPEED, PLAYER_SPEED, PLAYER_SHOT_SPEED, PLAYER_SHOOT_COOLDOWN_CONSTANT
+import constants
 from shot import Shot
 
 class Player(CircleShape):
@@ -41,17 +42,17 @@ class Player(CircleShape):
             self.rotate(dt)
         if keys[pygame.K_SPACE] and self.shootrate_cooldown <= 0:
             self.shoot()
-            self.shootrate_cooldown = PLAYER_SHOOT_COOLDOWN_CONSTANT
+            self.shootrate_cooldown = PLAYER_SHOOT_COOLDOWN_CONSTANT * constants.multiplier_shot_cooldown
 
     def move(self, dt: float) -> None:
         unit_vector = pygame.Vector2(0, 1)
         rotated_vector = unit_vector.rotate(self.rotation)
-        self.position += rotated_vector * PLAYER_SPEED * dt
+        self.position += rotated_vector * PLAYER_SPEED * constants.multiplier_player_speed * dt
 
     
     def shoot(self):
         bullet = Shot(self.position.x, self.position.y)
         player_direction = pygame.Vector2(0, 1)
         player_direction = player_direction.rotate(self.rotation)
-        bullet.velocity = player_direction * PLAYER_SHOT_SPEED
+        bullet.velocity = player_direction * PLAYER_SHOT_SPEED * constants.multiplier_shot_speed
 

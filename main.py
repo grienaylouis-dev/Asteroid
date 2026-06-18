@@ -1,5 +1,6 @@
 import pygame
 import sys
+import constants
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT
 from logger import log_state, log_event
 from player import Player
@@ -27,10 +28,10 @@ def main():
     AsteroidField.containers = (updatable)
     asteroid_field = AsteroidField()
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
-    level_bar = ExpBar(SCREEN_WIDTH / 2, SCREEN_HEIGHT * (1-0.03), SCREEN_WIDTH * 0.55, SCREEN_HEIGHT * 0.02, 100)
+    level_bar = ExpBar(SCREEN_WIDTH / 2, SCREEN_HEIGHT * (1-0.03), SCREEN_WIDTH * 0.55, SCREEN_HEIGHT * 0.02, 100.0)
     exp_bar = ExpBar(SCREEN_WIDTH / 2, SCREEN_HEIGHT * (1-0.06), SCREEN_WIDTH * 0.55, SCREEN_HEIGHT * 0.02, 100)
-    level_display = ExpBar(SCREEN_WIDTH / 2, SCREEN_HEIGHT * (1-0.03), SCREEN_WIDTH * 0.55, SCREEN_HEIGHT * 0.02, 20, True)
-    exp_display = ExpBar(SCREEN_WIDTH / 2, SCREEN_HEIGHT * (1-0.06), SCREEN_WIDTH * 0.55, SCREEN_HEIGHT * 0.02, 0, True)
+    level_display = ExpBar(SCREEN_WIDTH / 2, SCREEN_HEIGHT * (1-0.03), SCREEN_WIDTH * 0.55, SCREEN_HEIGHT * 0.02, 5.0, True)
+    exp_display = ExpBar(SCREEN_WIDTH / 2, SCREEN_HEIGHT * (1-0.06), SCREEN_WIDTH * 0.55, SCREEN_HEIGHT * 0.02, 5.0, True)
 
     #GAME LOOP
     while True:
@@ -54,17 +55,28 @@ def main():
                     shot.kill()
                     exp_display.add_point(exp)
         
-        #draw
-        exp_display.draw(screen)
+        #update lvl
         if exp_display.max_point():
-            level_display.add_point(20)
-            level_display.draw(screen)
+            LevelUp(level_display)
+
 
         #render
         screen.fill("black")
         for element in drawable:
             element.draw(screen)
         pygame.display.flip()
+
+
+def LevelUp(level_display: ExpBar):
+    level_display.add_point(20)
+    constants.multiplier_shot_speed += level_display.points / 200
+    if level_display.points / (level_display.points + 350) < constants.multiplier_shot_cooldown and constants.multiplier_shot_cooldown > 0.1 :
+        constants.multiplier_shot_cooldown -= level_display.points / (level_display.points + 350)
+    if constants.multiplier_player_speed < 500:
+        constants.multiplier_player_speed += level_display.points / 150
+    if constants.multiplier_exp > 0.20:
+        constants.multiplier_exp *= constants.multiplier_exp - 0.02
+
 
 
 if __name__ == "__main__":

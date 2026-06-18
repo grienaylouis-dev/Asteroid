@@ -25,11 +25,16 @@ class RectangleShape(pygame.sprite.Sprite):
 class ExpBar(RectangleShape):
     def __init__(self, center_x: float, center_y: float, width: float, height: float, points, fill:bool = False) -> None:
         super().__init__(center_x, center_y, width, height)
-        self.points: int = points
+        self.points: float = points
         self.fill = fill
 
     def draw(self, screen, color: str = "grey", line_width: int = int(LINE_WIDTH/2)):
-        self.rect.width = int(self.rect_max.width * self.points/100)
+        if self.points >= 110.0:
+            self.rect.width = int(self.rect_max.width)
+            color = "green"
+        else:
+            self.rect.width = int(self.rect_max.width * self.points/100)
+
         if self.fill:
             pygame.draw.rect(screen, color, self.rect)
         else:
@@ -38,7 +43,7 @@ class ExpBar(RectangleShape):
     def update(self, points) -> None:
         pass
 
-    def add_point(self, points: int):
+    def add_point(self, points: float):
         self.points += points
     
     def max_point(self) -> bool:
